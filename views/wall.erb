@@ -1,0 +1,42 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">	
+  <title></title>
+</head>
+
+<body>
+	<div id="messages"></div>	  
+	<hr />
+	<div id="debug"></div>	  
+	
+	<script src="js/libs/jquery-1.5.1.min.js"></script> 
+	<script>
+			$(document).ready(function(){
+				ws = new WebSocket("ws://0.0.0.0:8082");
+				ws.onopen = function() { debug("Connected to iWall"); }
+				ws.onclose = function() { debug("Connection closed."); }
+					ws.onmessage = function(evt) {
+						$("#messages").html("");
+						messages = JSON.parse(evt.data); 
+						for (i=0; i<messages.length; i++) {
+							message = JSON.parse(messages[i])
+							append_message(message);
+						}
+					}
+					
+				function debug(str){ $("#debug").append("<p>"+str+"</p>"); }	
+				
+				function append_message(message) {
+					uid = message["uid"];
+					text = message["text"];
+					votes = message["votes"];
+					$("#messages").append($("<p d='" + uid + "'>"+ text + " (" + votes + ")</p>"));
+				}	
+
+			});
+	</script>
+	
+</body>
+</html>
+
+

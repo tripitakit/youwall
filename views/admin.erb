@@ -1,0 +1,63 @@
+<!doctype html>
+<head>
+  <meta charset="utf-8">	
+  <title></title>
+</head>
+
+<body>
+	<h2>iWall admin controller</h2>
+	
+	<input type="text" id="admin_message" size="42">
+	<br /><br /><hr />
+	
+	<h3>Messages</h3>
+	<div id="messages"></div>
+	<div id="erase_all"><a href="#">Delete all messages!</a></div>
+    
+	<h3>Debug</h3>
+	<div id="debug"></div>	  
+	
+	<script src="js/libs/jquery-1.5.1.min.js"></script> 
+	<script>
+			$(document).ready(function(){
+				ws = new WebSocket("ws://0.0.0.0:8081");
+				ws.onopen = function() { debug("Admin Connected to iWall"); }
+				ws.onclose = function() { debug("Connection closed."); }
+				ws.onmessage = function(evt) {
+					$("#messages").html("");
+					messages = JSON.parse(evt.data); 
+					for (i=0; i<messages.length; i++) {
+						message = JSON.parse(messages[i]);
+						append_message(message);
+					}
+				}
+		
+				function debug(str){ $("#debug").append("<p>"+str+"</p>"); }	
+			
+				function append_message(message) {	
+					uid = message["uid"];
+					text = message["text"];
+					votes = message["votes"];
+					$("#messages").append($("<p><a href='#' id='" + uid + "'>"+ text + " : " + votes + "</a></p>"));
+					$("#" + uid).click(function(){ delete_message(this.id) });
+				}	
+
+				function delete_message(uid) {
+					ws.send ('{"type" : "delete", "uid" : "' + uid +'" }');
+				}
+			
+				$("#erase_all").click(function(){
+					ws.send ('{"type" : "erase_all"}');
+				});
+				
+				$("#admin_message").change(function() {
+					ws.send ('{"type" : "admin_message", "text" : "' +  this.value + '" }');
+					this.value = '';
+				});			
+			});
+	</script>
+	
+</body>
+</html>
+
+
