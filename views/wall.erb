@@ -15,14 +15,14 @@
 				ws = new WebSocket("ws://0.0.0.0:8082");
 				ws.onopen = function() { debug("Connected to iWall"); }
 				ws.onclose = function() { debug("Connection closed."); }
-					ws.onmessage = function(evt) {
-						$("#messages").html("");
-						messages = JSON.parse(evt.data); 
-						for (i=0; i<messages.length; i++) {
-							message = JSON.parse(messages[i])
-							append_message(message);
-						}
+				ws.onmessage = function(evt) {
+					$("#messages").html("");
+					messages = JSON.parse(evt.data); 
+					for (i = 0; i < messages.length; i++) {
+						message = JSON.parse(messages[i])
+						append_message(message);
 					}
+				}
 					
 				function debug(str){ $("#debug").append("<p>"+str+"</p>"); }	
 				
@@ -35,7 +35,7 @@
 
 			});
 	</script>
-	
+
 </body>
 </html>
 

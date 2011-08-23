@@ -1,10 +1,11 @@
 class Message
   $uid = 0
-  attr_reader :uid, :text, :votes
+  attr_reader :uid, :text, :votes, :user_socket
   
-  def initialize(text)
+  def initialize(text, user_socket)
     @uid = $uid
     @text = text
+    @user_socket = user_socket
     @votes = 0  
     $uid += 1
     puts "New message added."

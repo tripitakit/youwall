@@ -31,8 +31,8 @@ require './ywall'
 # Message functions
 # =================================================================================================
 
-  def add_to_user_messages(text)
-    @user_messages << Message.new(text)
+  def add_to_user_messages(text, user_socket)
+    @user_messages << Message.new(text, user_socket)
   end
 
   def add_to_admin_messages(text)
@@ -40,9 +40,9 @@ require './ywall'
     puts @admin_messages.inspect
   end
 
-  def vote(uid)
+  def vote(uid, voting_user_socket)
     @user_messages.each do |msg|
-      msg.voted if msg.uid == uid.to_i
+      msg.voted if (msg.uid == uid.to_i && msg.user_socket != voting_user_socket)
     end
   end
   
@@ -94,11 +94,11 @@ require './ywall'
           when "message"
             text = message["text"]
             puts ".. it's a text: #{text}"
-            add_to_user_messages(text)
+            add_to_user_messages(text, user_socket)
             broadcast json_messages_list
           when "vote"
             puts ".. it is a vote for #{message['uid']}"
-            vote(message["uid"])
+            vote(message["uid"], user_socket)
             @admin_socket.send json_messages_list if @admin_socket  
             @wall_socket.send json_messages_list if @wall_socket      
                 
