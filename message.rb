@@ -5,7 +5,7 @@ class Message
   def initialize(text, user_socket)
     @uid = $uid
     @text = text
-    @user_socket = user_socket
+    @user_socket = user_socket  
     @votes = 0  
     $uid += 1
     puts "New message added."

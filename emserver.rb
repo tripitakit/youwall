@@ -36,7 +36,7 @@ require './ywall'
   end
 
   def add_to_admin_messages(text)
-    @admin_messages << Message.new(text)
+    @admin_messages << Message.new(text, :admin)
     puts @admin_messages.inspect
   end
 

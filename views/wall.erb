@@ -5,37 +5,66 @@
 </head>
 
 <body>
-	<div id="messages"></div>	  
-	<hr />
-	<div id="debug"></div>	  
-	
-	<script src="js/libs/jquery-1.5.1.min.js"></script> 
-	<script>
-			$(document).ready(function(){
-				ws = new WebSocket("ws://0.0.0.0:8082");
-				ws.onopen = function() { debug("Connected to iWall"); }
-				ws.onclose = function() { debug("Connection closed."); }
-				ws.onmessage = function(evt) {
-					$("#messages").html("");
-					messages = JSON.parse(evt.data); 
-					for (i = 0; i < messages.length; i++) {
-						message = JSON.parse(messages[i])
-						append_message(message);
-					}
-				}
-					
-				function debug(str){ $("#debug").append("<p>"+str+"</p>"); }	
-				
-				function append_message(message) {
-					uid = message["uid"];
-					text = message["text"];
-					votes = message["votes"];
-					$("#messages").append($("<p d='" + uid + "'>"+ text + " (" + votes + ")</p>"));
-				}	
 
-			});
 	</script>
+	<script type="text/javascript" src="js/libs/paper.js"></script>
+	
+		<script type="text/paperscript" canvas="wall">
+		
+			messages = [];
+			walltext = [];
+			var ws = new WebSocket("ws://0.0.0.0:8082");
 
+			ws.onopen = function() { alert("Connected to iWall"); }				
+			ws.onclose = function() { alert("Connection closed."); }
+
+			ws.onmessage = function(evt) {
+				messages = [];
+			 	var incoming_messages = JSON.parse(evt.data); 
+				for (i = 0; i < incoming_messages.length; i++) {
+					messages.push(JSON.parse(incoming_messages[i]));
+					if (walltext[i]) {walltext[i].visible = false};
+				}
+				
+				setup();
+			}			
+		
+			function setup() {
+				
+				walltext = [];
+				destination = [];
+				for(i=0; i<messages.length; i++) {
+					walltext[i] = new PointText();
+					walltext[i].fillColor = "black";
+					walltext[i].position = Point.random()*view.size;
+					destination[i] = Point.random() * view.size;			
+				}
+			}		
+		
+			function onFrame(event) {
+				for(i=0; i<walltext.length; i++) {
+					var vector = destination[i] - walltext[i].position;
+					walltext[i].position += vector / 200;
+					walltext[i].characterStyle = {
+					    fontSize: 24 + 2*messages[i].votes,
+					};	
+					walltext[i].content = messages[i].text ;
+					if (vector.length < 5) {
+					        destination[i] = Point.random() * view.size;
+					  }	
+				}
+			}
+		</script>
+		
+		<script src="js/libs/jquery-1.5.1.min.js"></script> 
+		<script>
+				$(document).ready(function(){});		
+		
+
+	</script>
+	<canvas id="wall" resize></canvas>
+	
+	
 </body>
 </html>
 
