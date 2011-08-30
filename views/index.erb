@@ -24,7 +24,7 @@
 				ws.onclose = function() { debug("Connection closed."); }
 					ws.onmessage = function(evt) {
 						$("#messages").html("");
-						messages = JSON.parse(evt.data); 
+						var messages = JSON.parse(evt.data); 
 						for (i=0; i<messages.length; i++) {
 							message = JSON.parse(messages[i]);
 							append_message(message);
@@ -34,8 +34,8 @@
 				function debug(str){ $("#debug").append("<p>"+str+"</p>"); }	
 				
 				function append_message(message) {
-					uid = message["uid"];
-					text = message["text"];
+					var uid = message["uid"];
+					var text = message["text"];
 					$("#messages").append($("<p><a href='#' id='" + uid + "'>"+ text + "</a></p>"));
 					$("#" + uid).click(function(){ send_vote(this.id) });
 				}	
@@ -46,7 +46,10 @@
 				
 
 				$("#new_msg").change(function() {
-					ws.send ('{"type" : "message", "text" : "' +  this.value + '" }');
+					var user_text = (this.value);
+					// clean user msg from whitin-text double quotes, to fix for outcoming json parsing error.
+					var unquoted_text = user_text.replace(/"([^"]*)"/g,"$1"); 
+					ws.send ('{"type" : "message", "text" : "' +  unquoted_text + '" }');
 					this.value = '';
 				});			
 			});

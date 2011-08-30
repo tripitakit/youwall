@@ -1,7 +1,7 @@
 #!/Users/patrick/.rvm/rubies/ruby-1.9.2-p180/bin/ruby
 
 # =================================================================================================
-# youWall server.rb
+# emserver.rb
 # =================================================================================================
 
 require 'em-websocket'
@@ -21,11 +21,8 @@ require './ywall'
   @admin_messages = []
   @wall_socket = nil
   
-  # admin_messages_log = "logs/admin_messages.log"
-  # user_messages_log = "logs/user_messages.log"
-  #    
-  #  to do : msg logs + splash msgs
-  #
+  admin_messages_log = "logs/admin_messages.log"
+  user_messages_log = "logs/user_messages.log"
      
 #
 # Message functions
@@ -69,6 +66,20 @@ require './ywall'
     m_list.to_json
   end  
 
+#
+# Preset opening messages
+# =================================================================================================
+  preset_messages = [ "Benvenuti su YouWall (aka BableWall)",
+                      "Il muro luminoso e interattivo a un tap dal tuo smartphone",
+                      "Scrivi il tuo messaggio sul muro attraverso il controller remoto",
+                      "Vota i messaggi che piu' ti piacciono e osservali crescere mentre fluttuano sullo schermo",
+                      "Quattro font e quattro colori mescolati tra loro per i vostri messaggi",
+                      "Questi messaggi sono predefiniti e si mostrano all'apertura dell'applicazione",
+                      "Andale!"
+                    ]
+  preset_messages.each do |msg| 
+    add_to_user_messages(msg, :preset)
+  end
 
 #
 # Event driven I/O server
